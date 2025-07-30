@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alphabet Fun</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Comic Neue', cursive;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: hidden;
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10zm10 8c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm40 40c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .letter-card {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .letter-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .letter-card.selected {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px #60a5fa, 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .letter-card.correct {
+            animation: correct-animation 0.5s;
+        }
+        
+        .letter-card.incorrect {
+            animation: incorrect-animation 0.5s;
+        }
+        
+        .target-container {
+            animation: pulse 2s infinite;
+        }
+        
+        .object-item {
+            animation: float 3s ease-in-out infinite;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            animation: fall linear forwards;
+            z-index: 1000;
+        }
+        
+        .star {
+            position: absolute;
+            animation: star-fall 1s forwards;
+            z-index: 100;
+        }
+        
+        @keyframes correct-animation {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); background-color: rgba(74, 222, 128, 0.8); }
+        }
+        
+        @keyframes incorrect-animation {
+            0%, 100% { transform: scale(1); }
+            20%, 60% { transform: translateX(-5px); background-color: rgba(248, 113, 113, 0.8); }
+            40%, 80% { transform: translateX(5px); background-color: rgba(248, 113, 113, 0.8); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+        
+        @keyframes star-fall {
+            0% { transform: translateY(-20px) scale(0); opacity: 0; }
+            50% { opacity: 1; transform: translateY(10px) scale(1.2); }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        
+        .progress-bar {
+            height: 20px;
+            border-radius: 10px;
+            background: linear-gradient(to right, #60a5fa, #3b82f6);
+            transition: width 0.5s ease;
+        }
+        
+        .alphabet-chart-item {
+            transition: all 0.3s;
+        }
+        
+        .alphabet-chart-item:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .object-item:nth-child(odd) {
+            animation-delay: 0.5s;
+        }
+        
+        .object-item:nth-child(3n) {
+            animation-delay: 1s;
+        }
+        
+        .object-item:nth-child(3n+1) {
+            animation-delay: 1.5s;
+        }
+        
+        .highlighted {
+            transform: scale(1.3) !important;
+            filter: brightness(1.3);
+            z-index: 10;
+            animation: highlight-pulse 0.8s infinite !important;
+        }
+        
+        @keyframes highlight-pulse {
+            0%, 100% { transform: scale(1.3); }
+            50% { transform: scale(1.5); }
+        }
+        
+        .sound-button {
+            background: linear-gradient(to bottom, #60a5fa, #3b82f6);
+            transition: all 0.3s;
+            box-shadow: 0 4px 0 #1d4ed8;
+        }
+        
+        .sound-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #1d4ed8;
+        }
+        
+        .sound-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1d4ed8;
+        }
+        
+        .sound-button:disabled {
+            opacity: 0.7;
+            transform: none;
+            box-shadow: 0 4px 0 #1d4ed8;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-400 via-indigo-400 to-purple-400 min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-5xl font-bold mb-2 drop-shadow-lg text-white">Alphabet Fun</h1>
+            <div id="stars-container" class="flex items-center justify-center h-12 mb-2">
+                <!-- Stars will appear here -->
+            </div>
+        </header>
+
+               
+        <!-- Home Button -->
+        <div class="absolute top-4 left-4">
+            <button id="home-button" class="home-button text-white font-bold py-2 px-4 rounded-full flex items-center gap-2">
+                <span>🏠</span>
+                <span>Home</span>
+            </button>
+        </div>
+
+        <!-- Game Area -->
+        <div class="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-lg mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-3xl">🎮</div>
+                <div class="bg-white/30 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🏆</span>
+                        <div class="w-48 bg-white/30 rounded-full overflow-hidden">
+                            <div id="game-progress" class="progress-bar w-0"></div>
+                        </div>
+                        <span id="round-indicator" class="text-white font-bold">1/26</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-white mb-2">Match the Letter</h2>
+                <p class="text-xl text-white">Which letter matches the picture?</p>
+            </div>
+
+            <!-- Target Letter and Image -->
+            <div id="target-container" class="bg-white/30 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 mb-4 min-h-[200px] target-container">
+                <!-- Target letter and image will be added here -->
+            </div>
+            
+            <!-- Sound Button -->
+            <button id="sound-button" class="sound-button text-white font-bold py-3 px-6 rounded-full mx-auto block mb-6 text-xl">
+                <span class="flex items-center gap-2">
+                    <span>🔊</span>
+                    <span>Hear the letter</span>
+                </span>
+            </button>
+
+            <!-- Letter Options -->
+            <div id="letter-options" class="flex justify-center gap-10 mb-4">
+                <!-- Letters will be added here -->
+            </div>
+        </div>
+        
+        <!-- Alphabet Chart -->
+        <div class="bg-white/20 backdrop-blur-md rounded-3xl p-6 shadow-lg">
+            <h2 class="text-2xl font-bold text-white mb-4 text-center">Alphabet Chart</h2>
+            <div id="alphabet-chart" class="grid grid-cols-6 sm:grid-cols-9 gap-3">
+                <!-- Alphabet chart will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
+            <div id="feedback-icon" class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full text-6xl"></div>
+            <h3 id="feedback-title" class="text-3xl font-bold mb-4 text-gray-800"></h3>
+            <p id="feedback-message" class="text-xl mb-6 text-gray-600"></p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button id="feedback-button" class="px-6 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Continue</button>
+                <button id="try-again-button" class="px-6 py-3 bg-indigo-500 text-white text-xl rounded-full hover:bg-indigo-600 transition-colors shadow-lg hidden">Let me try again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Complete Modal -->
+    <div id="complete-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
+            <div class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full bg-blue-100 text-6xl">
+                🎉
+            </div>
+            <h3 class="text-3xl font-bold mb-4 text-gray-800">Great Job!</h3>
+            <p id="complete-message" class="text-xl mb-6 text-gray-600">You completed the game!</p>
+            <button id="play-again-btn" class="px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Play Again</button>
+             <button id="home-btn" class="px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Home</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Alphabet data
+            const alphabetData = [
+                { letter: 'A', word: 'Apple', emoji: '🍎' },
+                { letter: 'B', word: 'Balloon', emoji: '🎈' },
+                { letter: 'C', word: 'Cat', emoji: '🐱' },
+                { letter: 'D', word: 'Dog', emoji: '🐶' },
+                { letter: 'E', word: 'Elephant', emoji: '🐘' },
+                { letter: 'F', word: 'Fish', emoji: '🐠' },
+                { letter: 'G', word: 'Giraffe', emoji: '🦒' },
+                { letter: 'H', word: 'House', emoji: '🏠' },
+                { letter: 'I', word: 'Ice Cream', emoji: '🍦' },
+                { letter: 'J', word: 'Juice', emoji: '🧃' },
+                { letter: 'K', word: 'Kite', emoji: '🪁' },
+                { letter: 'L', word: 'Lion', emoji: '🦁' },
+                { letter: 'M', word: 'Monkey', emoji: '🐵' },
+                { letter: 'N', word: 'Nose', emoji: '👃' },
+                { letter: 'O', word: 'Orange', emoji: '🍊' },
+                { letter: 'P', word: 'Penguin', emoji: '🐧' },
+                { letter: 'Q', word: 'Queen', emoji: '👑' },
+                { letter: 'R', word: 'Rabbit', emoji: '🐰' },
+                { letter: 'S', word: 'Sun', emoji: '☀️' },
+                { letter: 'T', word: 'Train', emoji: '🚂' },
+                { letter: 'U', word: 'Umbrella', emoji: '☂️' },
+                { letter: 'V', word: 'Violin', emoji: '🎻' },
+                { letter: 'W', word: 'Watermelon', emoji: '🍉' },
+                { letter: 'X', word: 'Xylophone', emoji: '🎵' },
+                { letter: 'Y', word: 'Yo-yo', emoji: '🪀' },
+                { letter: 'Z', word: 'Zebra', emoji: '🦓' }
+            ];
+
+            // Game state
+            let gameState = {
+                currentRound: 0,
+                totalRounds: 26,
+                correctAnswers: 0,
+                usedLetters: [],
+                stars: 0,
+                currentLetter: null,
+                currentWord: null,
+                currentEmoji: null,
+                correctPositions: [] // Track positions for verification
+            };
+
+            // DOM elements
+            const targetContainer = document.getElementById('target-container');
+            const letterOptions = document.getElementById('letter-options');
+            const gameProgress = document.getElementById('game-progress');
+            const starsContainer = document.getElementById('stars-container');
+            const alphabetChart = document.getElementById('alphabet-chart');
+            const feedbackModal = document.getElementById('feedback-modal');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackMessage = document.getElementById('feedback-message');
+            const feedbackButton = document.getElementById('feedback-button');
+            const tryAgainButton = document.getElementById('try-again-button');
+            const completeModal = document.getElementById('complete-modal');
+            const completeMessage = document.getElementById('complete-message');
+            const playAgainBtn = document.getElementById('play-again-btn');
+            const soundButton = document.getElementById('sound-button');
+             const homeBtn = document.getElementById('home-btn');
+            const homeButton = document.getElementById('home-button');
+            const roundIndicator = document.getElementById('round-indicator');
+
+            // Initialize
+            function init() {
+                // Generate alphabet chart
+                generateAlphabetChart();
+                
+                // Set up feedback button
+                feedbackButton.addEventListener('click', closeFeedback);
+                
+                // Set up try again button
+                tryAgainButton.addEventListener('click', () => {
+                    feedbackModal.classList.add('hidden');
+                    enableLetterOptions();
+                });
+                
+                // Set up play again button
+                playAgainBtn.addEventListener('click', () => {
+                    completeModal.classList.add('hidden');
+                    startGame();
+                });
+                
+                  // Set up home buttons
+                homeBtn.addEventListener('click', () => {
+                    completeModal.classList.add('hidden');
+                    goHome();
+                });
+                
+                homeButton.addEventListener('click', goHome);
+                
+                
+                        // Go home function
+            function goHome() {
+                window.location.href = "main.html";
+            }
+                // Set up sound button
+                soundButton.addEventListener('click', () => {
+                    if (gameState.currentLetter) {
+                        speakText(`${gameState.currentLetter}. ${gameState.currentLetter} for ${gameState.currentWord}`);
+                    }
+                });
+                
+                // Start the game
+                startGame();
+            }
+
+            // Generate alphabet chart
+            function generateAlphabetChart() {
+                alphabetChart.innerHTML = '';
+                
+                alphabetData.forEach(item => {
+                    const letterCard = document.createElement('div');
+                    letterCard.className = 'alphabet-chart-item bg-white/80 rounded-xl p-3 flex flex-col items-center justify-center shadow-md';
+                    letterCard.innerHTML = `
+                        <div class="text-3xl font-bold text-blue-600">${item.letter}</div>
+                        <div class="text-2xl">${item.emoji}</div>
+                        <div class="text-sm font-medium">${item.word}</div>
+                    `;
+                    
+                    // Add click event to play letter sound
+                    letterCard.addEventListener('click', () => {
+                        speakText(`${item.letter}. ${item.letter} for ${item.word}`);
+                        
+                        // Visual feedback
+                        letterCard.classList.add('selected');
+                        setTimeout(() => {
+                            letterCard.classList.remove('selected');
+                        }, 500);
+                    });
+                    
+                    alphabetChart.appendChild(letterCard);
+                });
+            }
+
+            // Start game
+            function startGame() {
+                // Reset state
+                gameState = {
+                    currentRound: 0,
+                    totalRounds: 26,
+                    correctAnswers: 0,
+                    usedLetters: [],
+                    stars: 0,
+                    currentLetter: null,
+                    currentWord: null,
+                    currentEmoji: null,
+                    correctPositions: []
+                };
+                
+                starsContainer.innerHTML = '';
+                updateProgress();
+                nextRound();
+            }
+
+            // Next round
+            function nextRound() {
+                if (gameState.currentRound >= gameState.totalRounds) {
+                    showGameComplete();
+                    return;
+                }
+                
+                // Get a random letter that hasn't been used
+                let availableLetters = alphabetData.filter(item => !gameState.usedLetters.includes(item.letter));
+                if (availableLetters.length === 0) {
+                    gameState.usedLetters = [];
+                    availableLetters = [...alphabetData];
+                }
+                
+                const randomIndex = Math.floor(Math.random() * availableLetters.length);
+                const targetItem = availableLetters[randomIndex];
+                gameState.usedLetters.push(targetItem.letter);
+                gameState.currentLetter = targetItem.letter;
+                gameState.currentWord = targetItem.word;
+                gameState.currentEmoji = targetItem.emoji;
+                
+                // Display target letter and image
+                targetContainer.innerHTML = '';
+                
+                const targetDisplay = document.createElement('div');
+                targetDisplay.className = 'flex flex-col items-center justify-center gap-4';
+                
+                const emojiDisplay = document.createElement('div');
+                emojiDisplay.className = 'text-9xl object-item';
+                emojiDisplay.textContent = targetItem.emoji;
+                
+                const wordDisplay = document.createElement('div');
+                wordDisplay.className = 'text-3xl font-bold text-white';
+                wordDisplay.textContent = targetItem.word;
+                
+                targetDisplay.appendChild(emojiDisplay);
+                targetDisplay.appendChild(wordDisplay);
+                targetContainer.appendChild(targetDisplay);
+                
+                // Create options - with guaranteed random position
+                createLetterOptions(targetItem.letter);
+                
+                gameState.currentRound++;
+                updateProgress();
+                
+                // Update round indicator
+                roundIndicator.textContent = `${gameState.currentRound}/${gameState.totalRounds}`;
+            }
+            
+            // Create letter options with guaranteed random position for correct answer
+            function createLetterOptions(correctLetter) {
+                letterOptions.innerHTML = '';
+                
+                // Create array of all possible letters (A-Z)
+                const allLetters = alphabetData.map(item => item.letter);
+                
+                // Remove the correct letter
+                const incorrectLetters = allLetters.filter(letter => letter !== correctLetter);
+                
+                // Shuffle and take 2 (we want 3 options total - correct + 2 incorrect)
+                shuffleArray(incorrectLetters);
+                const twoIncorrectLetters = incorrectLetters.slice(0, 2);
+                
+                // Randomly determine position for correct answer (0, 1, or 2)
+                const correctPosition = Math.floor(Math.random() * 3);
+                
+                // Track positions for verification
+                gameState.correctPositions.push(correctPosition);
+                
+                // Create the final array with the correct letter in the random position
+                const finalOptions = [...twoIncorrectLetters];
+                finalOptions.splice(correctPosition, 0, correctLetter);
+                
+                // Create option elements
+                finalOptions.forEach((letter, index) => {
+                    const letterCard = document.createElement('div');
+                    letterCard.className = 'letter-card bg-white/80 rounded-xl p-6 flex items-center justify-center shadow-lg text-7xl font-bold text-gray-800 w-28 h-28';
+                    letterCard.textContent = letter;
+                    letterCard.dataset.position = index;
+                    letterCard.addEventListener('click', () => checkAnswer(letter, correctLetter));
+                    letterOptions.appendChild(letterCard);
+                });
+                
+                // Log the position history (for verification only)
+                console.log(`Round ${gameState.currentRound + 1}: Correct answer (${correctLetter}) is in position ${correctPosition + 1} of 3`);
+                console.log("Position history:", gameState.correctPositions);
+            }
+
+            // Check answer
+            function checkAnswer(selectedLetter, correctLetter) {
+                const isCorrect = selectedLetter === correctLetter;
+                const selectedCard = Array.from(letterOptions.children).find(card => card.textContent === selectedLetter);
+                
+                if (isCorrect) {
+                    selectedCard.classList.add('correct');
+                    gameState.correctAnswers++;
+                    addStar();
+                    speakText(`Yes! ${correctLetter} is for ${gameState.currentWord}!`);
+                    showFeedback(true, `Yes! ${correctLetter} is for ${gameState.currentWord}!`);
+                } else {
+                    selectedCard.classList.add('incorrect');
+                    speakText(`Not quite. Let's try again.`);
+                    showFeedback(false, `Not quite. ${correctLetter} is for ${gameState.currentWord}.`, true);
+                }
+                
+                // Disable all options
+                disableLetterOptions();
+                
+                // Highlight correct answer if wrong
+                if (!isCorrect) {
+                    const correctCard = Array.from(letterOptions.children).find(card => card.textContent === correctLetter);
+                    setTimeout(() => {
+                        correctCard.classList.add('selected');
+                    }, 500);
+                }
+            }
+            
+            // Disable letter options
+            function disableLetterOptions() {
+                Array.from(letterOptions.children).forEach(card => {
+                    card.style.pointerEvents = 'none';
+                });
+            }
+            
+            // Enable letter options
+            function enableLetterOptions() {
+                Array.from(letterOptions.children).forEach(card => {
+                    if (!card.classList.contains('correct')) {
+                        card.style.pointerEvents = 'auto';
+                        card.classList.remove('incorrect');
+                        card.classList.remove('selected');
+                    }
+                });
+            }
+
+            // Update progress
+            function updateProgress() {
+                const percentage = (gameState.currentRound / gameState.totalRounds) * 100;
+                gameProgress.style.width = `${percentage}%`;
+            }
+
+            // Add star
+            function addStar() {
+                if (gameState.stars < 5) {
+                    const star = document.createElement('div');
+                    star.className = 'star text-3xl';
+                    star.textContent = '⭐';
+                    star.style.animationDuration = '0.5s';
+                    starsContainer.appendChild(star);
+                    gameState.stars++;
+                }
+            }
+
+            // Show feedback
+            function showFeedback(isCorrect, message, showTryAgain = false) {
+                feedbackModal.classList.remove('hidden');
+                
+                if (isCorrect) {
+                    feedbackIcon.textContent = '😃';
+                    feedbackTitle.textContent = 'Great job!';
+                    feedbackTitle.className = 'text-3xl font-bold mb-4 text-green-600';
+                    feedbackButton.className = 'px-6 py-3 bg-green-500 text-white text-xl rounded-full hover:bg-green-600 transition-colors shadow-lg';
+                    tryAgainButton.classList.add('hidden');
+                    createConfetti();
+                } else {
+                    feedbackIcon.textContent = '🤔';
+                    feedbackTitle.textContent = 'Try again!';
+                    feedbackTitle.className = 'text-3xl font-bold mb-4 text-blue-600';
+                    feedbackButton.className = 'px-6 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg';
+                    
+                    if (showTryAgain) {
+                        tryAgainButton.classList.remove('hidden');
+                    } else {
+                        tryAgainButton.classList.add('hidden');
+                    }
+                }
+                
+                feedbackMessage.textContent = message;
+            }
+
+            // Close feedback
+            function closeFeedback() {
+                feedbackModal.classList.add('hidden');
+                nextRound();
+            }
+
+            // Show game complete
+            function showGameComplete() {
+                completeModal.classList.remove('hidden');
+                completeMessage.textContent = `You matched ${gameState.correctAnswers} out of ${gameState.totalRounds} letters correctly!`;
+                speakText(`Great job! You matched ${gameState.correctAnswers} out of ${gameState.totalRounds} letters correctly!`);
+                createConfetti();
+            }
+
+            // Create confetti effect
+            function createConfetti() {
+                const colors = ['#ff0000', '#ffa500', '#ffff00', '#00ff00', '#0000ff', '#ff00ff'];
+                
+                for (let i = 0; i < 30; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 15 + 10 + 'px';
+                    confetti.style.height = Math.random() * 15 + 10 + 'px';
+                    confetti.style.opacity = Math.random() + 0.5;
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+
+            // Text-to-speech function
+            function speakText(text) {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.rate = 0.9; // Slightly slower for kids
+                    utterance.pitch = 1.1; // Slightly higher pitch
+                    speechSynthesis.speak(utterance);
+                }
+            }
+
+            // Utility function to shuffle array
+            function shuffleArray(array) {
+                const newArray = [...array];
+                for (let i = newArray.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+                }
+                return newArray;
+            }
+
+            // Initialize
+            init();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'966d17e5275fccd4',t:'MTc1Mzc5NzExMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Sorting Game for Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Comic Neue', cursive;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: hidden;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .draggable {
+            cursor: grab;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .draggable:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .draggable.dragging {
+            opacity: 0.8;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+
+        .category-container {
+            min-height: 180px;
+            transition: all 0.3s;
+            border: 5px dashed rgba(255, 255, 255, 0.5);
+        }
+
+        .category-container.drag-over {
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 5px dashed white;
+            transform: scale(1.03);
+        }
+
+        .item-card {
+            transform-origin: center bottom;
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            transform: scale(1.05);
+        }
+
+        .correct-animation {
+            animation: bounce 0.8s;
+        }
+
+        .incorrect-animation {
+            animation: shake 0.5s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-8px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(8px);
+            }
+        }
+
+        .star {
+            position: absolute;
+            animation: star-fall 1s forwards;
+            z-index: 100;
+        }
+
+        @keyframes star-fall {
+            0% {
+                transform: translateY(-20px) scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateY(10px) scale(1.2);
+            }
+
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            animation: fall linear forwards;
+            z-index: 1000;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .progress-bar {
+            height: 20px;
+            border-radius: 10px;
+            background: linear-gradient(to right, #4ade80, #22c55e);
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-b from-blue-400 via-purple-400 to-pink-300 min-h-screen p-3">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-bold mb-2 drop-shadow-lg text-white">Food Items</h1>
+            <div class="flex justify-center items-center mb-2">
+                <div class="bg-white/30 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🏆</span>
+                        <div class="w-48 bg-white/30 rounded-full overflow-hidden">
+                            <div id="progress-bar" class="progress-bar w-0"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="stars-container" class="flex items-center justify-center h-12 mb-2">
+                <!-- Stars will appear here -->
+            </div>
+        </header>
+
+                
+        <!-- Home Button -->
+        <div class="absolute top-4 left-4">
+            <button id="home-button" class="home-button text-white font-bold py-2 px-4 rounded-full flex items-center gap-2">
+                <span>🏠</span>
+                <span>Home</span>
+            </button>
+        </div>
+        
+
+        <!-- Game Container -->
+        <div class="bg-white/20 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-lg">
+            <!-- Game Instructions -->
+            <div class="bg-white/30 rounded-2xl p-4 mb-6 text-center">
+                <p class="text-xl font-bold">Sort the Food items!</p>
+                <p class="text-lg">Drag each items to its correct place</p>
+            </div>
+
+            <!-- Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <!-- Fruits -->
+                <div class="category-container bg-green-500/60 rounded-2xl p-4" data-category="fruit">
+                    <h2 class="text-2xl font-bold mb-2 text-center drop-shadow-md">Fruits</h2>
+                    <div class="flex justify-center mb-2">
+                        <div class="bg-white/30 rounded-full p-3 w-20 h-20 flex items-center justify-center">
+                            <svg class="fruit-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Apple Body -->
+                                <ellipse cx="50" cy="60" rx="30" ry="25" fill="#FF0000" />
+                                <ellipse cx="40" cy="50" rx="10" ry="15" fill="#FF0000" />
+                                <ellipse cx="60" cy="50" rx="10" ry="15" fill="#FF0000" />
+
+                                <!-- Stem -->
+                                <rect x="47" y="25" width="6" height="15" fill="#8B4513" rx="2" />
+
+                                <!-- Leaf -->
+                                <path d="M50 25 Q60 15 65 25 Q60 23 50 25" fill="#228B22" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Veggies -->
+                <div class="category-container bg-blue-500/60 rounded-2xl p-4" data-category="vegetable">
+                    <h2 class="text-2xl font-bold mb-2 text-center drop-shadow-md">Vegetables</h2>
+                    <div class="flex justify-center mb-2">
+                        <div class="bg-white/30 rounded-full p-3 w-20 h-20 flex items-center justify-center">
+                            <svg class="veggie-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Carrot Body -->
+                                <path d="M50 20 Q45 50 40 80 Q50 85 60 80 Q55 50 50 20" fill="#FFA500" />
+
+                                <!-- Leafy Top -->
+                                <path d="M45 15 Q40 5 50 10 Q60 5 55 15" fill="#228B22" />
+                                <path d="M50 15 Q50 0 60 8 Q70 0 65 15" fill="#228B22" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desserts -->
+                <div class="category-container bg-yellow-500/60 rounded-2xl p-4" data-category="dessert">
+                    <h2 class="text-2xl font-bold mb-2 text-center drop-shadow-md">Desserts</h2>
+                    <div class="flex justify-center mb-2">
+                        <div class="bg-white/30 rounded-full p-3 w-20 h-20 flex items-center justify-center">
+                            <svg class="dessert-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="40,60 60,60 50,90" fill="#D2691E" />
+                                <circle cx="50" cy="45" r="15" fill="#FFC0CB" />
+                                <path d="M35 45 Q40 40 45 45 Q50 40 55 45 Q60 40 65 45 Q60 50 35 45" fill="#FF69B4" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items to Categorize -->
+            <div id="items-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-6 justify-items-center">
+                <!-- Items will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Feedback Modal -->
+        <div id="feedback-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
+            <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
+                <div id="feedback-icon"
+                    class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full text-6xl"></div>
+                <h3 id="feedback-title" class="text-3xl font-bold mb-4 text-gray-800"></h3>
+                <p id="feedback-message" class="text-xl mb-6 text-gray-600"></p>
+                <button id="feedback-button"
+                    class="px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Continue</button>
+            </div>
+        </div>
+
+        <!-- Game Complete Modal -->
+        <div id="complete-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
+            <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
+                <div
+                    class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full bg-yellow-100 text-6xl">
+                    🎉 🎉
+                </div>
+                <h3 class="text-3xl font-bold mb-4 text-gray-800">Hooray!</h3>
+                <p class="text-xl mb-6 text-gray-600">You did very well!</p>
+                <div class="flex justify-center gap-4">
+                    <button id="play-again-btn"
+                        class="px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Play
+                        Again</button>
+                    <button id="new-game-btn"
+                        class="px-8 py-3 bg-green-500 text-white text-xl rounded-full hover:bg-green-600 transition-colors shadow-lg">New
+                        Game</button>
+                        <button id="home-btn" class="px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Home</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Button -->
+        <button id="help-button"
+            class="fixed bottom-4 right-4 bg-yellow-400 hover:bg-yellow-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl">❓</button>
+
+        <!-- Help Modal -->
+        <div id="help-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
+            <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800">How to Play</h3>
+                    <button id="close-help" class="text-2xl">&times;</button>
+                </div>
+                <div class="mb-4">
+                    <p class="mb-3 text-lg">1. Drag each food items where it belongs</p>
+                    <p class="mb-3 text-lg">2. Fruits go to fruit section</p>
+                    <p class="mb-3 text-lg">3. Vegetables go vegetable section</p>
+                    <p class="mb-3 text-lg">4. Desserts go to dessert section</p>
+                </div>
+                <div class="text-center">
+                    <button id="got-it-btn"
+                        class="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors shadow-lg">Got
+                        it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Game data
+            const gameTypes = [
+                {
+                    name: "Food",
+                    categories: [
+                        { id: "fruit", name: "Fruits", color: "red" },
+                        { id: "vegetable", name: "Vegetables", color: "green" },
+                        { id: "dessert", name: "Desserts", color: "pink" }
+                    ],
+                    items: [
+                        { id: 1, name: "Apple", category: "fruit", emoji: "🍎" },
+                        { id: 2, name: "Banana", category: "fruit", emoji: "🍌" },
+                        { id: 3, name: "Orange", category: "fruit", emoji: "🍊" },
+                        { id: 4, name: "Carrot", category: "vegetable", emoji: "🥕" },
+                        { id: 5, name: "Broccoli", category: "vegetable", emoji: "🥦" },
+                        { id: 6, name: "Corn", category: "vegetable", emoji: "🌽" },
+                        { id: 7, name: "Ice Cream", category: "dessert", emoji: "🍦" },
+                        { id: 8, name: "Cake", category: "dessert", emoji: "🍰" },
+                        { id: 9, name: "Donut", category: "dessert", emoji: "🍩" }
+                    ]
+                }
+            ];
+
+            let currentGameType = 0;
+            let gameState = {
+                score: 0,
+                completed: 0,
+                totalItems: 0,
+                remainingItems: [],
+                stars: 0
+            };
+
+            // DOM elements
+            const itemsContainer = document.getElementById('items-container');
+            const starsContainer = document.getElementById('stars-container');
+            const progressBar = document.getElementById('progress-bar');
+            const feedbackModal = document.getElementById('feedback-modal');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackMessage = document.getElementById('feedback-message');
+            const feedbackButton = document.getElementById('feedback-button');
+            const completeModal = document.getElementById('complete-modal');
+            const playAgainBtn = document.getElementById('play-again-btn');
+            const newGameBtn = document.getElementById('new-game-btn');
+            const helpButton = document.getElementById('help-button');
+            const helpModal = document.getElementById('help-modal');
+            const closeHelpBtn = document.getElementById('close-help');
+            const gotItBtn = document.getElementById('got-it-btn');
+            const homeBtn = document.getElementById('home-btn');
+            const homeButton = document.getElementById('home-button');
+
+            // Initialize game
+            function initGame(gameTypeIndex = 0) {
+                currentGameType = gameTypeIndex;
+                const gameData = gameTypes[currentGameType];
+
+                // Update header
+                document.querySelector('h1').textContent = gameData.name;
+
+                // Update categories
+                document.querySelectorAll('.category-container').forEach((container, index) => {
+                    if (index < gameData.categories.length) {
+                        const category = gameData.categories[index];
+                        container.setAttribute('data-category', category.id);
+                        container.querySelector('h2').textContent = category.name;
+                        container.className = `category-container bg-${category.color}-500/60 rounded-2xl p-4`;
+                    }
+                });
+
+                gameState = {
+                    score: 0,
+                    completed: 0,
+                    totalItems: gameData.items.length,
+                    remainingItems: [...gameData.items],
+                    stars: 0
+                };
+
+                starsContainer.innerHTML = '';
+                updateProgress();
+                shuffleAndDisplayItems();
+
+                // Set up event listeners for categories
+                document.querySelectorAll('.category-container').forEach(container => {
+                    container.addEventListener('dragover', handleDragOver);
+                    container.addEventListener('dragleave', handleDragLeave);
+                    container.addEventListener('drop', handleDrop);
+                    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+                    container.addEventListener('touchend', handleTouchEnd);
+                });
+
+                feedbackButton.addEventListener('click', closeFeedback);
+                playAgainBtn.addEventListener('click', () => resetGame(currentGameType));
+                newGameBtn.addEventListener('click', () => resetGame((currentGameType + 1) % gameTypes.length));
+                helpButton.addEventListener('click', showHelp);
+                closeHelpBtn.addEventListener('click', hideHelp);
+                gotItBtn.addEventListener('click', hideHelp);
+
+                // Show help on first load
+                if (!localStorage.getItem('helpShown')) {
+                    setTimeout(showHelp, 500);
+                    localStorage.setItem('helpShown', 'true');
+                }
+            }
+
+            
+                  // Set up home buttons
+                homeBtn.addEventListener('click', () => {
+                    completeModal.classList.add('hidden');
+                    goHome();
+                });
+                
+                homeButton.addEventListener('click', goHome);
+                
+                
+                 // Go home function
+            function goHome() {
+                window.location.href = "main.html";
+            }
+
+            // Shuffle and display items
+            function shuffleAndDisplayItems() {
+                // Clear container
+                itemsContainer.innerHTML = '';
+
+                // Shuffle items
+                gameState.remainingItems.sort(() => Math.random() - 0.5);
+
+                // Display items
+                gameState.remainingItems.forEach(item => {
+                    const itemCard = createItemCard(item);
+                    itemsContainer.appendChild(itemCard);
+                });
+            }
+
+            // Create item card
+            function createItemCard(item) {
+                const card = document.createElement('div');
+                card.className = 'item-card draggable bg-white/90 rounded-2xl p-4 flex flex-col items-center shadow-lg border-4 border-white floating';
+                card.setAttribute('draggable', 'true');
+                card.setAttribute('data-id', item.id);
+                card.setAttribute('data-category', item.category);
+
+                card.innerHTML = `
+                    <div class="text-7xl mb-2">${item.emoji}</div>
+                    <div class="font-bold text-xl text-center text-gray-800">${item.name}</div>
+                `;
+
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                card.addEventListener('touchstart', handleTouchStart);
+
+                return card;
+            }
+
+            // Update progress
+            function updateProgress() {
+                const percentage = (gameState.completed / gameState.totalItems) * 100;
+                progressBar.style.width = `${percentage}%`;
+            }
+
+            // Drag and drop handlers
+            function handleDragStart(e) {
+                this.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
+                e.dataTransfer.effectAllowed = 'move';
+
+                // Play sound
+                playSound('drag');
+            }
+
+            function handleDragEnd() {
+                this.classList.remove('dragging');
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+                e.dataTransfer.dropEffect = 'move';
+            }
+
+            function handleDragLeave() {
+                this.classList.remove('drag-over');
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+
+                const itemId = e.dataTransfer.getData('text/plain');
+                processItemDrop(itemId, this);
+            }
+
+            // Touch handlers for mobile
+            let touchedItem = null;
+
+            function handleTouchStart(e) {
+                touchedItem = this;
+                this.classList.add('dragging');
+
+                // Play sound
+                playSound('drag');
+            }
+
+            function handleTouchMove(e) {
+                e.preventDefault();
+
+                if (!touchedItem) return;
+
+                const touch = e.touches[0];
+                const elementsAtTouch = document.elementsFromPoint(touch.clientX, touch.clientY);
+
+                // Move the element with the touch
+                touchedItem.style.position = 'fixed';
+                touchedItem.style.left = touch.clientX - touchedItem.offsetWidth / 2 + 'px';
+                touchedItem.style.top = touch.clientY - touchedItem.offsetHeight / 2 + 'px';
+
+                // Remove drag-over from all containers
+                document.querySelectorAll('.category-container').forEach(container => {
+                    container.classList.remove('drag-over');
+                });
+
+                // Add drag-over to the container under touch
+                const containerUnderTouch = elementsAtTouch.find(el =>
+                    el.classList.contains('category-container')
+                );
+
+                if (containerUnderTouch) {
+                    containerUnderTouch.classList.add('drag-over');
+                }
+            }
+
+            function handleTouchEnd(e) {
+                if (!touchedItem) return;
+
+                // Reset position
+                touchedItem.style.position = '';
+                touchedItem.style.left = '';
+                touchedItem.style.top = '';
+
+                const touch = e.changedTouches[0];
+                const elementsAtTouch = document.elementsFromPoint(touch.clientX, touch.clientY);
+
+                // Find if we're over a category container
+                const containerUnderTouch = elementsAtTouch.find(el =>
+                    el.classList.contains('category-container')
+                );
+
+                if (containerUnderTouch) {
+                    const itemId = touchedItem.getAttribute('data-id');
+                    processItemDrop(itemId, containerUnderTouch);
+                }
+
+                // Clean up
+                document.querySelectorAll('.category-container').forEach(container => {
+                    container.classList.remove('drag-over');
+                });
+
+                if (touchedItem) {
+                    touchedItem.classList.remove('dragging');
+                    touchedItem = null;
+                }
+            }
+
+            // Process item drop
+            function processItemDrop(itemId, targetContainer) {
+                const draggedElement = document.querySelector(`[data-id="${itemId}"]`);
+                const targetCategory = targetContainer.getAttribute('data-category');
+                const itemCategory = draggedElement.getAttribute('data-category');
+
+                const gameData = gameTypes[currentGameType];
+                const item = gameData.items.find(i => i.id == itemId);
+
+                // Check if correct category
+                const isCorrect = targetCategory === itemCategory;
+
+                // Show feedback
+                showFeedback(isCorrect, item);
+
+                // Update game state
+                if (isCorrect) {
+                    gameState.score++;
+                    addStar();
+                    playSound('correct');
+                } else {
+                    playSound('incorrect');
+                }
+
+                gameState.completed++;
+                gameState.remainingItems = gameState.remainingItems.filter(i => i.id != itemId);
+
+                // Remove the item card
+                draggedElement.remove();
+
+                // Update progress
+                updateProgress();
+
+                // Check if game is complete
+                if (gameState.completed === gameState.totalItems) {
+                    setTimeout(() => {
+                        showGameComplete();
+                    }, 1000);
+                }
+            }
+
+            // Add star
+            function addStar() {
+                const star = document.createElement('div');
+                star.className = 'star text-3xl';
+                star.textContent = '⭐';
+                star.style.animationDuration = '0.5s';
+                starsContainer.appendChild(star);
+                gameState.stars++;
+            }
+
+            // Show feedback modal
+            function showFeedback(isCorrect, item) {
+                feedbackModal.classList.remove('hidden');
+
+                if (isCorrect) {
+                    feedbackIcon.textContent = '😃';
+                    feedbackTitle.textContent = 'Great job!';
+                    feedbackMessage.textContent = `${item.name} is happy in its home!`;
+                    feedbackTitle.className = 'text-3xl font-bold mb-4 text-green-600';
+                    feedbackButton.className = 'px-8 py-3 bg-green-500 text-white text-xl rounded-full hover:bg-green-600 transition-colors shadow-lg';
+                    createConfetti();
+                } else {
+                    feedbackIcon.textContent = '🤔';
+                    feedbackTitle.textContent = 'Try again!';
+                    feedbackMessage.textContent = `${item.name} lives somewhere else.`;
+                    feedbackTitle.className = 'text-3xl font-bold mb-4 text-blue-600';
+                    feedbackButton.className = 'px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg';
+                }
+            }
+
+            // Close feedback modal
+            function closeFeedback() {
+                feedbackModal.classList.add('hidden');
+            }
+
+            // Show game complete modal
+            function showGameComplete() {
+                completeModal.classList.remove('hidden');
+                createConfetti();
+                playSound('complete');
+            }
+
+            // Reset game
+            function resetGame(gameTypeIndex) {
+                completeModal.classList.add('hidden');
+                initGame(gameTypeIndex);
+            }
+
+            // Show help modal
+            function showHelp() {
+                helpModal.classList.remove('hidden');
+            }
+
+            // Hide help modal
+            function hideHelp() {
+                helpModal.classList.add('hidden');
+            }
+
+            // Create confetti effect
+            function createConfetti() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+
+                for (let i = 0; i < 30; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 15 + 10 + 'px';
+                    confetti.style.height = Math.random() * 15 + 10 + 'px';
+                    confetti.style.opacity = Math.random() + 0.5;
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+
+            // Play sound effects
+            function playSound(type) {
+                // We can't actually play sounds due to limitations,
+                // but this function would handle sound effects if we could
+                console.log(`Playing ${type} sound`);
+            }
+
+            // Initialize the game
+            initGame();
+        });
+    </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9664e8e5e453d115',t:'MTc1MzcxMTI5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+</body>
+
+</html>

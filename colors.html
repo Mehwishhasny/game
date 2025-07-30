@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Game for Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .draggable {
+            cursor: grab;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .draggable:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+        .draggable.dragging {
+            opacity: 0.8;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .category-container {
+            min-height: 180px;
+            transition: all 0.3s;
+            border: 4px dashed rgba(255,255,255,0.5);
+            position: relative;
+        }
+        .category-container.drag-over {
+            background-color: rgba(255,255,255,0.3);
+            border: 4px dashed white;
+        }
+        .item-card {
+            transform-origin: center bottom;
+        }
+        .correct-animation {
+            animation: bounce 0.8s;
+        }
+        .incorrect-animation {
+            animation: shake 0.5s;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .star {
+            position: absolute;
+            animation: star-fall 1s forwards;
+            z-index: 100;
+        }
+        @keyframes star-fall {
+            0% { transform: translateY(-20px) scale(0); opacity: 0; }
+            50% { opacity: 1; transform: translateY(10px) scale(1.2); }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            animation: fall linear forwards;
+            z-index: 1000;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+        body {
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: hidden;
+        }
+        .category-progress {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.7), rgba(255,255,255,0.9));
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+            border-radius: 6px;
+            box-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+        .home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+            transition: all 0.2s ease;
+        }
+        .home-button:hover {
+            transform: scale(1.1);
+        }
+        .home-button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-blue-400 to-purple-500 min-h-screen font-sans text-white p-3">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-bold mb-2 drop-shadow-lg">Sorting Game</h1>
+            <div class="flex justify-center items-center">
+                <div id="stars-container" class="flex items-center justify-center h-12 mb-2">
+                    <!-- Stars will appear here -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Game Container -->
+        <div class="bg-white/20 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-3xl">🎮</div>
+                <div class="bg-white/30 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🏆</span>
+                        <div class="w-48 bg-white/30 rounded-full overflow-hidden">
+                            <div id="game-progress" class="progress-bar w-0"></div>
+                        </div>
+                        <span id="round-indicator" class="text-white font-bold">1/26</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <!-- Red Category -->
+                <div class="category-container bg-red-500/60 rounded-2xl p-4" data-category="red">
+                    <h2 class="text-xl font-bold mb-2 text-center">Red Items</h2>
+                    <div class="items-container min-h-[100px] flex flex-wrap gap-2 justify-center"></div>
+                    <div class="category-progress">
+                        <div class="progress-bar" id="red-progress"></div>
+                    </div>
+                </div>
+                
+                <!-- Blue Category -->
+                <div class="category-container bg-blue-500/60 rounded-2xl p-4" data-category="blue">
+                    <h2 class="text-xl font-bold mb-2 text-center">Blue Items</h2>
+                    <div class="items-container min-h-[100px] flex flex-wrap gap-2 justify-center"></div>
+                    <div class="category-progress">
+                        <div class="progress-bar" id="blue-progress"></div>
+                    </div>
+                </div>
+                
+                <!-- Green Category -->
+                <div class="category-container bg-green-500/60 rounded-2xl p-4" data-category="green">
+                    <h2 class="text-xl font-bold mb-2 text-center">Green Items</h2>
+                    <div class="items-container min-h-[100px] flex flex-wrap gap-2 justify-center"></div>
+                    <div class="category-progress">
+                        <div class="progress-bar" id="green-progress"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Items to Sort -->
+            <div class="bg-white/30 backdrop-blur-sm rounded-2xl p-4 mb-4">
+                <h2 class="text-xl font-bold mb-3 text-center">Drag Items to Their Categories</h2>
+                <div id="items-container" class="flex flex-wrap gap-3 justify-center"></div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="flex justify-center gap-4">
+                <button id="new-game-btn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-2 px-6 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                    New Game
+                </button>
+                <button id="hint-btn" class="bg-purple-400 hover:bg-purple-500 text-purple-900 font-bold py-2 px-6 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                    Hint
+                </button>
+                <button id="home-btn" class="bg-blue-400 hover:bg-blue-500 text-blue-900 font-bold py-2 px-6 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                    Home
+                </button>
+            </div>
+        </div>
+        
+        <!-- Game Complete Modal -->
+        <div id="complete-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center transform transition-all scale-100">
+                <div class="text-5xl mb-4">🎉</div>
+                <h2 class="text-3xl font-bold mb-4 text-purple-800">Great Job!</h2>
+                <p class="text-gray-700 mb-6 text-lg">You've completed the sorting game!</p>
+                <div class="flex justify-center gap-4">
+                    <button id="play-again-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all transform hover:scale-105">
+                        Play Again
+                    </button>
+                    <button id="modal-home-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all transform hover:scale-105">
+                        Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game data
+            const gameItems = [
+                { id: 1, name: "Apple", category: "red", emoji: "🍎" },
+                { id: 2, name: "Cherry", category: "red", emoji: "🍒" },
+                { id: 3, name: "Strawberry", category: "red", emoji: "🍓" },
+                { id: 4, name: "Heart", category: "red", emoji: "❤️" },
+                { id: 5, name: "Fire", category: "red", emoji: "🔥" },
+                { id: 6, name: "Rose", category: "red", emoji: "🌹" },
+                { id: 7, name: "Tomato", category: "red", emoji: "🍅" },
+                { id: 8, name: "Watermelon", category: "red", emoji: "🍉" },
+                { id: 9, name: "Blueberry", category: "blue", emoji: "🫐" },
+                { id: 10, name: "Water", category: "blue", emoji: "💧" },
+                { id: 11, name: "Ocean", category: "blue", emoji: "🌊" },
+                { id: 12, name: "Butterfly", category: "blue", emoji: "🦋" },
+                { id: 13, name: "Whale", category: "blue", emoji: "🐳" },
+                { id: 14, name: "Dolphin", category: "blue", emoji: "🐬" },
+                { id: 15, name: "Jeans", category: "blue", emoji: "👖" },
+                { id: 16, name: "Sapphire", category: "blue", emoji: "💙" },
+                { id: 17, name: "Leaf", category: "green", emoji: "🍃" },
+                { id: 18, name: "Tree", category: "green", emoji: "🌲" },
+                { id: 19, name: "Frog", category: "green", emoji: "🐸" },
+                { id: 20, name: "Cucumber", category: "green", emoji: "🥒" },
+                { id: 21, name: "Broccoli", category: "green", emoji: "🥦" },
+                { id: 22, name: "Avocado", category: "green", emoji: "🥑" },
+                { id: 23, name: "Cactus", category: "green", emoji: "🌵" },
+                { id: 24, name: "Turtle", category: "green", emoji: "🐢" },
+                { id: 25, name: "Crocodile", category: "green", emoji: "🐊" },
+                { id: 26, name: "Lizard", category: "green", emoji: "🦎" }
+            ];
+            
+            // Game state
+            let currentItems = [];
+            let correctItems = { red: 0, blue: 0, green: 0 };
+            let totalItems = { red: 0, blue: 0, green: 0 };
+            let stars = 0;
+            let hintActive = false;
+            let gameStarted = false;
+            
+            // DOM elements
+            const itemsContainer = document.getElementById('items-container');
+            const categoryContainers = document.querySelectorAll('.category-container');
+            const gameProgress = document.getElementById('game-progress');
+            const roundIndicator = document.getElementById('round-indicator');
+            const starsContainer = document.getElementById('stars-container');
+            const newGameBtn = document.getElementById('new-game-btn');
+            const hintBtn = document.getElementById('hint-btn');
+            const homeBtn = document.getElementById('home-btn');
+            const completeModal = document.getElementById('complete-modal');
+            const playAgainBtn = document.getElementById('play-again-btn');
+            const modalHomeBtn = document.getElementById('modal-home-btn');
+            const redProgress = document.getElementById('red-progress');
+            const blueProgress = document.getElementById('blue-progress');
+            const greenProgress = document.getElementById('green-progress');
+            
+            // Initialize game
+            function initGame() {
+                // Reset game state
+                currentItems = [];
+                correctItems = { red: 0, blue: 0, green: 0 };
+                stars = 0;
+                starsContainer.innerHTML = '';
+                
+                // Count total items per category
+                totalItems = { red: 0, blue: 0, green: 0 };
+                gameItems.forEach(item => {
+                    totalItems[item.category]++;
+                });
+                
+                // Shuffle and select items
+                const shuffled = [...gameItems].sort(() => 0.5 - Math.random());
+                currentItems = shuffled.slice(0, 12);
+                
+                // Update round indicator
+                roundIndicator.textContent = '1/26';
+                gameProgress.style.width = '0%';
+                
+                // Clear category containers
+                document.querySelectorAll('.items-container').forEach(container => {
+                    container.innerHTML = '';
+                });
+                
+                // Reset progress bars
+                redProgress.style.width = '0%';
+                blueProgress.style.width = '0%';
+                greenProgress.style.width = '0%';
+                
+                // Render items
+                renderItems();
+                
+                gameStarted = true;
+            }
+            
+            // Render items to sort
+            function renderItems() {
+                itemsContainer.innerHTML = '';
+                currentItems.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'item-card draggable bg-white/80 backdrop-blur-sm rounded-lg p-3 shadow-lg flex flex-col items-center justify-center cursor-grab';
+                    itemElement.setAttribute('draggable', 'true');
+                    itemElement.setAttribute('data-id', item.id);
+                    itemElement.setAttribute('data-category', item.category);
+                    
+                    itemElement.innerHTML = `
+                        <div class="text-4xl mb-1">${item.emoji}</div>
+                        <div class="text-sm font-medium text-gray-800">${item.name}</div>
+                    `;
+                    
+                    // Drag events
+                    itemElement.addEventListener('dragstart', handleDragStart);
+                    itemElement.addEventListener('dragend', handleDragEnd);
+                    itemElement.addEventListener('touchstart', handleTouchStart, {passive: true});
+                    itemElement.addEventListener('touchmove', handleTouchMove, {passive: false});
+                    itemElement.addEventListener('touchend', handleTouchEnd);
+                    
+                    itemsContainer.appendChild(itemElement);
+                });
+            }
+            
+            // Drag and drop functionality
+            let draggedItem = null;
+            
+            function handleDragStart(e) {
+                draggedItem = this;
+                setTimeout(() => this.classList.add('dragging'), 0);
+                e.dataTransfer.setData('text/plain', this.dataset.id);
+                e.dataTransfer.effectAllowed = 'move';
+            }
+            
+            function handleDragEnd() {
+                this.classList.remove('dragging');
+                categoryContainers.forEach(container => {
+                    container.classList.remove('drag-over');
+                });
+            }
+            
+            // Touch events for mobile
+            let touchStartX, touchStartY;
+            let touchItem = null;
+            let touchItemRect = null;
+            let touchOffset = { x: 0, y: 0 };
+            
+            function handleTouchStart(e) {
+                const touch = e.touches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                touchItem = this;
+                
+                // Calculate offset within the item
+                touchItemRect = this.getBoundingClientRect();
+                touchOffset.x = touchStartX - touchItemRect.left;
+                touchOffset.y = touchStartY - touchItemRect.top;
+                
+                // Add visual feedback
+                setTimeout(() => {
+                    this.classList.add('dragging');
+                    this.style.position = 'fixed';
+                    this.style.zIndex = '1000';
+                    this.style.width = `${touchItemRect.width}px`;
+                    this.style.height = `${touchItemRect.height}px`;
+                    this.style.left = `${touchItemRect.left}px`;
+                    this.style.top = `${touchItemRect.top}px`;
+                }, 0);
+            }
+            
+            function handleTouchMove(e) {
+                if (!touchItem) return;
+                e.preventDefault(); // Prevent scrolling while dragging
+                
+                const touch = e.touches[0];
+                const newLeft = touch.clientX - touchOffset.x;
+                const newTop = touch.clientY - touchOffset.y;
+                
+                touchItem.style.left = `${newLeft}px`;
+                touchItem.style.top = `${newTop}px`;
+                
+                // Check if over a category container
+                const elementsUnder = document.elementsFromPoint(touch.clientX, touch.clientY);
+                let overContainer = null;
+                
+                for (const element of elementsUnder) {
+                    if (element.classList.contains('category-container')) {
+                        overContainer = element;
+                        break;
+                    }
+                }
+                
+                // Visual feedback for containers
+                categoryContainers.forEach(container => {
+                    container.classList.remove('drag-over');
+                });
+                
+                if (overContainer) {
+                    overContainer.classList.add('drag-over');
+                }
+            }
+            
+            function handleTouchEnd(e) {
+                if (!touchItem) return;
+                
+                // Reset visual state
+                touchItem.classList.remove('dragging');
+                touchItem.style.position = '';
+                touchItem.style.zIndex = '';
+                touchItem.style.width = '';
+                touchItem.style.height = '';
+                touchItem.style.left = '';
+                touchItem.style.top = '';
+                
+                // Check if over a category container
+                const touch = e.changedTouches[0];
+                const elementsUnder = document.elementsFromPoint(touch.clientX, touch.clientY);
+                let targetContainer = null;
+                
+                for (const element of elementsUnder) {
+                    if (element.classList.contains('category-container')) {
+                        targetContainer = element;
+                        break;
+                    }
+                }
+                
+                // Handle drop
+                if (targetContainer) {
+                    const itemCategory = touchItem.dataset.category;
+                    const containerCategory = targetContainer.dataset.category;
+                    
+                    if (itemCategory === containerCategory) {
+                        handleCorrectDrop(touchItem, targetContainer);
+                    } else {
+                        handleIncorrectDrop(touchItem);
+                    }
+                }
+                
+                // Reset
+                categoryContainers.forEach(container => {
+                    container.classList.remove('drag-over');
+                });
+                touchItem = null;
+            }
+            
+            // Setup drop zones
+            categoryContainers.forEach(container => {
+                container.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+                
+                container.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over');
+                });
+                
+                container.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    
+                    const itemId = e.dataTransfer.getData('text/plain');
+                    const draggedElement = document.querySelector(`[data-id="${itemId}"]`);
+                    
+                    if (draggedElement) {
+                        const itemCategory = draggedElement.dataset.category;
+                        const containerCategory = this.dataset.category;
+                        
+                        if (itemCategory === containerCategory) {
+                            handleCorrectDrop(draggedElement, this);
+                        } else {
+                            handleIncorrectDrop(draggedElement);
+                        }
+                    }
+                });
+            });
+            
+            // Handle correct item placement
+            function handleCorrectDrop(item, container) {
+                // Clone the item to the category container
+                const itemsContainer = container.querySelector('.items-container');
+                const clone = item.cloneNode(true);
+                clone.classList.remove('draggable');
+                clone.removeAttribute('draggable');
+                clone.classList.add('correct-animation');
+                itemsContainer.appendChild(clone);
+                
+                // Remove the original item
+                item.remove();
+                
+                // Update game state
+                const category = container.dataset.category;
+                correctItems[category]++;
+                
+                // Update progress
+                updateProgress();
+                
+                // Create stars effect
+                createStar();
+                
+                // Check if all items are sorted
+                const remainingItems = itemsContainer.querySelectorAll('.draggable').length;
+                if (currentItems.length === 0 || remainingItems === 0) {
+                    setTimeout(checkGameCompletion, 1000);
+                }
+            }
+            
+            // Handle incorrect item placement
+            function handleIncorrectDrop(item) {
+                item.classList.add('incorrect-animation');
+                setTimeout(() => {
+                    item.classList.remove('incorrect-animation');
+                }, 500);
+            }
+            
+            // Update progress indicators
+            function updateProgress() {
+                // Update category progress bars
+                redProgress.style.width = `${(correctItems.red / totalItems.red) * 100}%`;
+                blueProgress.style.width = `${(correctItems.blue / totalItems.blue) * 100}%`;
+                greenProgress.style.width = `${(correctItems.green / totalItems.green) * 100}%`;
+                
+                // Update overall game progress
+                const totalCorrect = correctItems.red + correctItems.blue + correctItems.green;
+                const totalAll = totalItems.red + totalItems.blue + totalItems.green;
+                const progressPercentage = (totalCorrect / totalAll) * 100;
+                gameProgress.style.width = `${progressPercentage}%`;
+                roundIndicator.textContent = `${totalCorrect}/${totalAll}`;
+            }
+            
+            // Create star effect
+            function createStar() {
+                stars++;
+                if (stars > 5) stars = 5;
+                
+                starsContainer.innerHTML = '';
+                for (let i = 0; i < stars; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star text-3xl';
+                    star.textContent = '⭐';
+                    star.style.animationDuration = `${0.5 + Math.random() * 0.5}s`;
+                    starsContainer.appendChild(star);
+                }
+                
+                // Create confetti effect
+                createConfetti();
+            }
+            
+            // Create confetti effect
+            function createConfetti() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                
+                for (let i = 0; i < 20; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = `${Math.random() * 100}%`;
+                    confetti.style.animationDuration = `${1 + Math.random() * 3}s`;
+                    document.body.appendChild(confetti);
+                    
+                    // Remove confetti after animation
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+            }
+            
+            // Check if game is complete
+            function checkGameCompletion() {
+                const totalCorrect = correctItems.red + correctItems.blue + correctItems.green;
+                const totalAll = totalItems.red + totalItems.blue + totalItems.green;
+                
+                if (totalCorrect === totalAll) {
+                    // Show completion modal
+                    completeModal.classList.remove('hidden');
+                    createConfetti();
+                }
+            }
+            
+            // Hint functionality
+            hintBtn.addEventListener('click', function() {
+                if (hintActive) return;
+                hintActive = true;
+                
+                const items = document.querySelectorAll('#items-container .draggable');
+                items.forEach(item => {
+                    const category = item.dataset.category;
+                    item.classList.add('hint-pulse');
+                    
+                    // Add temporary highlight
+                    const originalBackground = item.style.backgroundColor;
+                    
+                    if (category === 'red') {
+                        item.style.backgroundColor = 'rgba(255, 200, 200, 0.9)';
+                    } else if (category === 'blue') {
+                        item.style.backgroundColor = 'rgba(200, 200, 255, 0.9)';
+                    } else if (category === 'green') {
+                        item.style.backgroundColor = 'rgba(200, 255, 200, 0.9)';
+                    }
+                    
+                    // Reset after hint
+                    setTimeout(() => {
+                        item.classList.remove('hint-pulse');
+                        item.style.backgroundColor = originalBackground;
+                        hintActive = false;
+                    }, 2000);
+                });
+            });
+            
+            // Home button functionality
+            function goToHomePage() {
+                window.location.href = 'main.html';
+            }
+            
+            homeBtn.addEventListener('click', goToHomePage);
+            modalHomeBtn.addEventListener('click', goToHomePage);
+            
+            // New game button
+            newGameBtn.addEventListener('click', initGame);
+            
+            // Play again button
+            playAgainBtn.addEventListener('click', function() {
+                completeModal.classList.add('hidden');
+                initGame();
+            });
+            
+            // Start the game
+            initGame();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96742833571aad41',t:'MTc1Mzg3MTE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
