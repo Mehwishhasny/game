@@ -125,12 +125,12 @@
             <div class="flex justify-between items-center mb-4">
                 <div class="text-xl sm:text-3xl">🎮</div>
                 <div class="bg-white/30 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 hidden">
                         <span class="text-xl sm:text-2xl">🏆</span>
                         <div class="w-40 sm:w-48 bg-white/30 rounded-full overflow-hidden">
                             <div id="game-progress" class="progress-bar w-0"></div>
                         </div>
-                        <span id="round-indicator" class="text-white font-bold">1/26</span>
+                        <span id="round-indicator" class="text-white font-bold">1/18</span>
                     </div>
                 </div>
             </div>
@@ -274,10 +274,11 @@
                 
                 // Shuffle and select items
                 const shuffled = [...gameItems].sort(() => 0.5 - Math.random());
-                currentItems = shuffled.slice(0, 12);
+                currentItems = shuffled.slice(0, 18);
+                
                 
                 // Update round indicator
-                roundIndicator.textContent = '1/26';
+                roundIndicator.textContent = '1/18';
                 gameProgress.style.width = '0%';
                 
                 // Clear category containers
