@@ -162,9 +162,9 @@
 <body class="bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 min-h-screen p-4">
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
-        <header class="text-center mb-6">
-            <h1 class="text-5xl font-bold mb-2 drop-shadow-lg text-white">Number Fun</h1>
-            <div id="stars-container" class="flex items-center justify-center h-12 mb-2">
+        <header class="text-center mb-4 sm:mb-6">
+            <h1 class="text-2xl sm:text-5xl font-bold mb-2 drop-shadow-lg text-white">Number Fun</h1>
+            <div id="stars-container" class="flex items-center justify-center h-10 sm:h-12 mb-2">
                 <!-- Stars will appear here -->
             </div>
         </header>
@@ -179,13 +179,13 @@
         </div>
 
         <!-- Game Area -->
-        <div class="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-lg mb-6">
+        <div class="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-lg mb-3 sm:mb-6">
             <div class="flex justify-between items-center mb-4">
-                <div class="text-3xl">🎮</div>
-                <div class="bg-white/30 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
+                <div class="text-xl sm:text-3xl">🎮</div>
+                <div class="bg-white/30 backdrop-blur-sm rounded-full px-4 sm:px-6 py-2 shadow-lg">
                     <div class="flex items-center gap-2">
-                        <span class="text-2xl">🏆</span>
-                        <div class="w-48 bg-white/30 rounded-full overflow-hidden">
+                        <span class="text-xl sm:text-2xl">🏆</span>
+                        <div class="w-40 sm:w-48 bg-white/30 rounded-full overflow-hidden">
                             <div id="game-progress" class="progress-bar w-0"></div>
                         </div>
                         <span id="round-indicator" class="text-white font-bold">1/10</span>
@@ -193,9 +193,9 @@
                 </div>
             </div>
             
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-white mb-2">Count and Match</h2>
-                <p class="text-xl text-white">How many objects do you see?</p>
+            <div class="text-center mb-3 sm:mb-6">
+                <h2 class="text-lg sm:text-2xl font-bold text-white mb-2">Count and Match</h2>
+                <p class="text-md sm:text-xl text-white">How many objects do you see?</p>
             </div>
 
             <!-- Objects to Count -->
@@ -204,7 +204,7 @@
             </div>
             
             <!-- Count Button -->
-            <button id="count-button" class="count-button text-white font-bold py-3 px-6 rounded-full mx-auto block mb-6 text-xl">
+            <button id="count-button" class="count-button text-white font-bold py-3 px-3 sm:px-6 rounded-full mx-auto block mb-6 text-md sm:text-xl">
                 <span class="flex items-center gap-2">
                     <span>🔢</span>
                     <span>Count with me!</span>
@@ -212,14 +212,14 @@
             </button>
 
             <!-- Number Options -->
-            <div id="number-options" class="flex justify-center gap-10 mb-4">
+            <div id="number-options" class="flex justify-center gap-6 sm:gap-10 mb-1 sm:mb-4">
                 <!-- Numbers will be added here -->
             </div>
         </div>
         
         <!-- Number Chart -->
-        <div class="bg-white/20 backdrop-blur-md rounded-3xl p-6 shadow-lg">
-            <h2 class="text-2xl font-bold text-white mb-4 text-center">Number Chart</h2>
+        <div class="bg-white/20 backdrop-blur-md rounded-3xl p-4 sm:p-6 shadow-lg">
+            <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 text-center">Number Chart</h2>
             <div id="number-chart" class="grid grid-cols-5 gap-3">
                 <!-- Number chart will be generated here -->
             </div>
@@ -228,27 +228,27 @@
 
     <!-- Feedback Modal -->
     <div id="feedback-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
-            <div id="feedback-icon" class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full text-6xl"></div>
-            <h3 id="feedback-title" class="text-3xl font-bold mb-4 text-gray-800"></h3>
-            <p id="feedback-message" class="text-xl mb-6 text-gray-600"></p>
+        <div class="bg-white rounded-3xl p-3 sm:p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
+            <div id="feedback-icon" class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full text-3xl sm:text-6xl"></div>
+            <h3 id="feedback-title" class="text-xl sm:text-3xl font-bold mb-4 text-gray-800"></h3>
+            <p id="feedback-message" class="text-xl mb-2 sm:mb-6 text-gray-600"></p>
             <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <button id="feedback-button" class="px-6 py-3 bg-orange-500 text-white text-xl rounded-full hover:bg-orange-600 transition-colors shadow-lg">Continue</button>
-                <button id="try-again-button" class="px-6 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg hidden">Let me try again</button>
+                <button id="feedback-button" class="px-4 sm:px-6 py-3 bg-orange-500 text-white text-md sm:text-xl rounded-full hover:bg-orange-600 transition-colors shadow-lg">Continue</button>
+                <button id="try-again-button" class="px-4 sm:px-6 py-3 bg-blue-500 text-white text-md sm:text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg hidden">Let me try again</button>
             </div>
         </div>
     </div>
 
     <!-- Game Complete Modal -->
     <div id="complete-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
-            <div class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full bg-yellow-100 text-6xl">
+        <div class="bg-white rounded-3xl p-3 sm:p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
+            <div class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full bg-yellow-100 text-3xl sm:text-6xl">
                 🎉
             </div>
-            <h3 class="text-3xl font-bold mb-4 text-gray-800">Great Job!</h3>
-            <p id="complete-message" class="text-xl mb-6 text-gray-600">You completed the game!</p>
-            <button id="play-again-btn" class="px-8 py-3 bg-orange-500 text-white text-xl rounded-full hover:bg-orange-600 transition-colors shadow-lg">Play Again</button>
-             <button id="home-btn" class="px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Home</button>
+            <h3 class="text-xl sm:text-3xl font-bold mb-2 sm:mb-4 text-gray-800">Great Job!</h3>
+            <p id="complete-message" class="text-xl mb-2 sm:mb-6 text-gray-600">You completed the game!</p>
+            <button id="play-again-btn" class="px-4 sm:px-8 py-3 bg-orange-500 text-white text-xl rounded-full hover:bg-orange-600 transition-colors shadow-lg">Play Again</button>
+             <button id="home-btn" class="px-4 sm:px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Home</button>
         </div>
     </div>
 
@@ -368,7 +368,7 @@
                     const numberCard = document.createElement('div');
                     numberCard.className = 'number-chart-item bg-white/80 rounded-xl p-3 flex flex-col items-center justify-center shadow-md';
                     numberCard.innerHTML = `
-                        <div class="text-3xl font-bold text-orange-600">${item.number}</div>
+                        <div class="text-xl sm:text-3xl font-bold text-orange-600">${item.number}</div>
                         <div class="flex flex-wrap justify-center gap-1">
                             ${item.objects.map(obj => `<span class="text-xl">${obj}</span>`).join('')}
                         </div>
@@ -443,7 +443,7 @@
                 
                 for (let i = 0; i < targetItem.number; i++) {
                     const objectDiv = document.createElement('div');
-                    objectDiv.className = 'object-item text-5xl';
+                    objectDiv.className = 'object-item text-3xl sm:text-5xl';
                     objectDiv.textContent = objectToUse;
                     objectDiv.dataset.index = i;
                     objectDiv.style.animationDelay = `${i * 0.2}s`;
@@ -490,7 +490,7 @@
                 // Create option elements
                 finalOptions.forEach((number, index) => {
                     const numberCard = document.createElement('div');
-                    numberCard.className = 'number-card bg-white/80 rounded-xl p-6 flex items-center justify-center shadow-lg text-7xl font-bold text-gray-800 w-28 h-28';
+                    numberCard.className = 'number-card bg-white/80 rounded-xl p-4 sm:p-6 flex items-center justify-center shadow-lg text-7xl font-bold text-gray-800 w-28 h-28';
                     numberCard.textContent = number;
                     numberCard.dataset.position = index;
                     numberCard.addEventListener('click', () => checkAnswer(number, correctNumber));
@@ -574,15 +574,15 @@
                 if (isCorrect) {
                     feedbackIcon.textContent = '😃';
                     feedbackTitle.textContent = 'Great job!';
-                    feedbackTitle.className = 'text-3xl font-bold mb-4 text-green-600';
-                    feedbackButton.className = 'px-6 py-3 bg-green-500 text-white text-xl rounded-full hover:bg-green-600 transition-colors shadow-lg';
+                    feedbackTitle.className = 'text-xl sm:text-3xl font-bold mb-2 sm:mb-4 text-green-600';
+                    feedbackButton.className = 'px-6 py-3 bg-green-500 text-white text-md sm:text-xl rounded-full hover:bg-green-600 transition-colors shadow-lg';
                     tryAgainButton.classList.add('hidden');
                     createConfetti();
                 } else {
                     feedbackIcon.textContent = '🤔';
                     feedbackTitle.textContent = 'Try again!';
-                    feedbackTitle.className = 'text-3xl font-bold mb-4 text-orange-600';
-                    feedbackButton.className = 'px-6 py-3 bg-orange-500 text-white text-xl rounded-full hover:bg-orange-600 transition-colors shadow-lg';
+                    feedbackTitle.className = 'text-xl sm:text-3xl font-bold mb-2 sm:mb-4 text-orange-600';
+                    feedbackButton.className = 'px-6 py-3 bg-orange-500 text-white txet-md sm:text-xl rounded-full hover:bg-orange-600 transition-colors shadow-lg';
                     
                     if (showTryAgain) {
                         tryAgainButton.classList.remove('hidden');

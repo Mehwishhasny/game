@@ -176,19 +176,19 @@
 <body class="bg-gradient-to-b from-blue-400 via-purple-400 to-pink-300 min-h-screen p-3">
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
-        <header class="text-center mb-6">
-            <h1 class="text-4xl font-bold mb-2 drop-shadow-lg text-white">Food Items</h1>
+        <header class="text-center mb-2 sm:mb-6">
+            <h1 class="text-xl sm:text-4xl font-bold mb-2 drop-shadow-lg text-white">Food Items</h1>
             <div class="flex justify-center items-center mb-2">
-                <div class="bg-white/30 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
+                <div class="bg-white/30 backdrop-blur-sm rounded-full px-4 sm:px-6 py-2 shadow-lg">
                     <div class="flex items-center gap-2">
                         <span class="text-2xl">🏆</span>
-                        <div class="w-48 bg-white/30 rounded-full overflow-hidden">
+                        <div class="w-40 sm:w-48 bg-white/30 rounded-full overflow-hidden">
                             <div id="progress-bar" class="progress-bar w-0"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="stars-container" class="flex items-center justify-center h-12 mb-2">
+            <div id="stars-container" class="flex items-center justify-center h-10 sm:h-12 mb-2">
                 <!-- Stars will appear here -->
             </div>
         </header>
@@ -207,15 +207,15 @@
         <div class="bg-white/20 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-lg">
             <!-- Game Instructions -->
             <div class="bg-white/30 rounded-2xl p-4 mb-6 text-center">
-                <p class="text-xl font-bold">Sort the Food items!</p>
-                <p class="text-lg">Drag each items to its correct place</p>
+                <p class="text-lg sm:text-xl font-bold">Sort the Food items!</p>
+                <p class="text-md sm:text-lg">Drag each items to its correct place</p>
             </div>
 
             <!-- Categories -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="grid grid-cols-3 md:grid-cols-3 gap-2 sm:gap-4 mb-8">
                 <!-- Fruits -->
-                <div class="category-container bg-green-500/60 rounded-2xl p-4" data-category="fruit">
-                    <h2 class="text-2xl font-bold mb-2 text-center drop-shadow-md">Fruits</h2>
+                <div class="category-container bg-green-500/60 rounded-2xl p-2 sm:p-4" data-category="fruit">
+                    <h2 class="text-lg sm:text-2xl font-bold mb-2 text-center drop-shadow-md">Fruits</h2>
                     <div class="flex justify-center mb-2">
                         <div class="bg-white/30 rounded-full p-3 w-20 h-20 flex items-center justify-center">
                             <svg class="fruit-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -235,8 +235,8 @@
                 </div>
 
                 <!-- Veggies -->
-                <div class="category-container bg-blue-500/60 rounded-2xl p-4" data-category="vegetable">
-                    <h2 class="text-2xl font-bold mb-2 text-center drop-shadow-md">Vegetables</h2>
+                <div class="category-container bg-blue-500/60 rounded-2xl p-2 sm:p-4" data-category="vegetable">
+                    <h2 class="text-lg sm:text-2xl font-bold mb-2 text-center drop-shadow-md">Vegetables</h2>
                     <div class="flex justify-center mb-2">
                         <div class="bg-white/30 rounded-full p-3 w-20 h-20 flex items-center justify-center">
                             <svg class="veggie-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -252,8 +252,8 @@
                 </div>
 
                 <!-- Desserts -->
-                <div class="category-container bg-yellow-500/60 rounded-2xl p-4" data-category="dessert">
-                    <h2 class="text-2xl font-bold mb-2 text-center drop-shadow-md">Desserts</h2>
+                <div class="category-container bg-yellow-500/60 rounded-2xl p-2 sm:p-4" data-category="dessert">
+                    <h2 class="text-lg sm:text-2xl font-bold mb-2 text-center drop-shadow-md">Desserts</h2>
                     <div class="flex justify-center mb-2">
                         <div class="bg-white/30 rounded-full p-3 w-20 h-20 flex items-center justify-center">
                             <svg class="dessert-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -267,7 +267,7 @@
             </div>
 
             <!-- Items to Categorize -->
-            <div id="items-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-6 justify-items-center">
+            <div id="items-container" class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-3 sm:gap-6 justify-items-center">
                 <!-- Items will be dynamically added here -->
             </div>
         </div>
@@ -276,29 +276,29 @@
         <div id="feedback-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
             <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
                 <div id="feedback-icon"
-                    class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full text-6xl"></div>
+                    class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full text-3xl sm:text-6xl"></div>
                 <h3 id="feedback-title" class="text-3xl font-bold mb-4 text-gray-800"></h3>
                 <p id="feedback-message" class="text-xl mb-6 text-gray-600"></p>
                 <button id="feedback-button"
-                    class="px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Continue</button>
+                    class="px-4 sm:px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Continue</button>
             </div>
         </div>
 
         <!-- Game Complete Modal -->
         <div id="complete-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
-            <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
+            <div class="bg-white rounded-3xl p-3 sm:p-6 max-w-sm w-full mx-4 text-center shadow-2xl">
                 <div
-                    class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full bg-yellow-100 text-6xl">
+                    class="mx-auto mb-4 w-24 h-24 flex items-center justify-center rounded-full bg-yellow-100 txet-3xl sm:text-6xl">
                     🎉 🎉
                 </div>
-                <h3 class="text-3xl font-bold mb-4 text-gray-800">Hooray!</h3>
+                <h3 class="text-xl sm:text-3xl font-bold mb-4 text-gray-800">Hooray!</h3>
                 <p class="text-xl mb-6 text-gray-600">You did very well!</p>
                 <div class="flex justify-center gap-4">
                     <button id="play-again-btn"
-                        class="px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Play
+                        class="px-8 py-3 bg-blue-500 text-white txet-md sm:text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Play
                         Again</button>
                     <button id="new-game-btn"
-                        class="px-8 py-3 bg-green-500 text-white text-xl rounded-full hover:bg-green-600 transition-colors shadow-lg">New
+                        class="px-8 py-3 bg-green-500 text-white text-md sm:text-xl rounded-full hover:bg-green-600 transition-colors shadow-lg">New
                         Game</button>
                         <button id="home-btn" class="px-8 py-3 bg-blue-500 text-white text-xl rounded-full hover:bg-blue-600 transition-colors shadow-lg">Home</button>
                 </div>
@@ -313,18 +313,18 @@
         <div id="help-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 hidden">
             <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-2xl font-bold text-gray-800">How to Play</h3>
-                    <button id="close-help" class="text-2xl">&times;</button>
+                    <h3 class="text-lg sm:text-2xl font-bold text-gray-800">How to Play</h3>
+                    <button id="close-help" class="text-lg sm:text-2xl">&times;</button>
                 </div>
                 <div class="mb-4">
-                    <p class="mb-3 text-lg">1. Drag each food items where it belongs</p>
-                    <p class="mb-3 text-lg">2. Fruits go to fruit section</p>
-                    <p class="mb-3 text-lg">3. Vegetables go vegetable section</p>
-                    <p class="mb-3 text-lg">4. Desserts go to dessert section</p>
+                    <p class="mb-3 text-md sm:text-lg">1. Drag each food items where it belongs</p>
+                    <p class="mb-3 text-md sm:text-lg">2. Fruits go to fruit section</p>
+                    <p class="mb-3 text-md sm:text-lg">3. Vegetables go vegetable section</p>
+                    <p class="mb-3 text-md sm:text-lg">4. Desserts go to dessert section</p>
                 </div>
                 <div class="text-center">
                     <button id="got-it-btn"
-                        class="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors shadow-lg">Got
+                        class="sm:px-6 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors shadow-lg">Got
                         it!</button>
                 </div>
             </div>
@@ -476,8 +476,8 @@
                 card.setAttribute('data-category', item.category);
 
                 card.innerHTML = `
-                    <div class="text-7xl mb-2">${item.emoji}</div>
-                    <div class="font-bold text-xl text-center text-gray-800">${item.name}</div>
+                    <div class="text-3xl sm:text-7xl mb-2">${item.emoji}</div>
+                    <div class="font-bold text-md sm:text-xl text-center text-gray-800">${item.name}</div>
                 `;
 
                 card.addEventListener('dragstart', handleDragStart);

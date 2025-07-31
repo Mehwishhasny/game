@@ -111,10 +111,10 @@
 
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
-        <header class="text-center mb-6">
-            <h1 class="text-4xl font-bold mb-2 drop-shadow-lg">Sorting Game</h1>
+        <header class="text-center mb-2 sm:mb-6">
+            <h1 class="text-2xl sm:text-4xl font-bold sm:mb-2 drop-shadow-lg">Sorting Game</h1>
             <div class="flex justify-center items-center">
-                <div id="stars-container" class="flex items-center justify-center h-12 mb-2">
+                <div id="stars-container" class="flex items-center justify-center h-8 sm:h-12 sm:mb-2">
                     <!-- Stars will appear here -->
                 </div>
             </div>
@@ -123,11 +123,11 @@
         <!-- Game Container -->
         <div class="bg-white/20 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-lg">
             <div class="flex justify-between items-center mb-4">
-                <div class="text-3xl">🎮</div>
+                <div class="text-xl sm:text-3xl">🎮</div>
                 <div class="bg-white/30 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
                     <div class="flex items-center gap-2">
-                        <span class="text-2xl">🏆</span>
-                        <div class="w-48 bg-white/30 rounded-full overflow-hidden">
+                        <span class="text-xl sm:text-2xl">🏆</span>
+                        <div class="w-40 sm:w-48 bg-white/30 rounded-full overflow-hidden">
                             <div id="game-progress" class="progress-bar w-0"></div>
                         </div>
                         <span id="round-indicator" class="text-white font-bold">1/26</span>
@@ -135,10 +135,10 @@
                 </div>
             </div>
             <!-- Categories -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="grid grid-cols-3 md:grid-cols-3 gap-1 sm:gap-4 mb-3 sm:mb-8">
                 <!-- Red Category -->
-                <div class="category-container bg-red-500/60 rounded-2xl p-4" data-category="red">
-                    <h2 class="text-xl font-bold mb-2 text-center">Red Items</h2>
+                <div class="category-container bg-red-500/60 rounded-2xl p-2 sm:p-4" data-category="red">
+                    <h2 class="text-md sm:text-xl font-bold mb-2 text-center">Red Items</h2>
                     <div class="items-container min-h-[100px] flex flex-wrap gap-2 justify-center"></div>
                     <div class="category-progress">
                         <div class="progress-bar" id="red-progress"></div>
@@ -146,8 +146,8 @@
                 </div>
                 
                 <!-- Blue Category -->
-                <div class="category-container bg-blue-500/60 rounded-2xl p-4" data-category="blue">
-                    <h2 class="text-xl font-bold mb-2 text-center">Blue Items</h2>
+                <div class="category-container bg-blue-500/60 rounded-2xl p-2 sm:p-4" data-category="blue">
+                    <h2 class="text-md sm:text-xl font-bold mb-2 text-center">Blue Items</h2>
                     <div class="items-container min-h-[100px] flex flex-wrap gap-2 justify-center"></div>
                     <div class="category-progress">
                         <div class="progress-bar" id="blue-progress"></div>
@@ -155,8 +155,8 @@
                 </div>
                 
                 <!-- Green Category -->
-                <div class="category-container bg-green-500/60 rounded-2xl p-4" data-category="green">
-                    <h2 class="text-xl font-bold mb-2 text-center">Green Items</h2>
+                <div class="category-container bg-green-500/60 rounded-2xl p-2 sm:p-4" data-category="green">
+                    <h2 class="textmd sm:text-xl font-bold mb-2 text-center">Green Items</h2>
                     <div class="items-container min-h-[100px] flex flex-wrap gap-2 justify-center"></div>
                     <div class="category-progress">
                         <div class="progress-bar" id="green-progress"></div>
@@ -165,7 +165,7 @@
             </div>
             
             <!-- Items to Sort -->
-            <div class="bg-white/30 backdrop-blur-sm rounded-2xl p-4 mb-4">
+            <div class="bg-white/30 backdrop-blur-sm rounded-2xl p-4 mb-2 sm:mb-4">
                 <h2 class="text-xl font-bold mb-3 text-center">Drag Items to Their Categories</h2>
                 <div id="items-container" class="flex flex-wrap gap-3 justify-center"></div>
             </div>
@@ -187,9 +187,9 @@
         <!-- Game Complete Modal -->
         <div id="complete-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
             <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center transform transition-all scale-100">
-                <div class="text-5xl mb-4">🎉</div>
-                <h2 class="text-3xl font-bold mb-4 text-purple-800">Great Job!</h2>
-                <p class="text-gray-700 mb-6 text-lg">You've completed the sorting game!</p>
+                <div class="text-2xl sm:text-5xl mb-2 sm:mb-4">🎉</div>
+                <h2 class="text-xl sm:text-3xl font-bold mb-4 text-purple-800">Great Job!</h2>
+                <p class="text-gray-700 mb-3 sm:mb-6 text-md sm:text-lg">You've completed the sorting game!</p>
                 <div class="flex justify-center gap-4">
                     <button id="play-again-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all transform hover:scale-105">
                         Play Again
@@ -301,13 +301,13 @@
                 itemsContainer.innerHTML = '';
                 currentItems.forEach(item => {
                     const itemElement = document.createElement('div');
-                    itemElement.className = 'item-card draggable bg-white/80 backdrop-blur-sm rounded-lg p-3 shadow-lg flex flex-col items-center justify-center cursor-grab';
+                    itemElement.className = 'item-card draggable bg-white/80 backdrop-blur-sm rounded-lg p-1 sm:p-3 shadow-lg flex flex-col items-center justify-center cursor-grab';
                     itemElement.setAttribute('draggable', 'true');
                     itemElement.setAttribute('data-id', item.id);
                     itemElement.setAttribute('data-category', item.category);
                     
                     itemElement.innerHTML = `
-                        <div class="text-4xl mb-1">${item.emoji}</div>
+                        <div class="text-xl sm:text-4xl mb-1">${item.emoji}</div>
                         <div class="text-sm font-medium text-gray-800">${item.name}</div>
                     `;
                     
@@ -535,7 +535,7 @@
                 starsContainer.innerHTML = '';
                 for (let i = 0; i < stars; i++) {
                     const star = document.createElement('div');
-                    star.className = 'star text-3xl';
+                    star.className = 'star text-xl sm:text-3xl';
                     star.textContent = '⭐';
                     star.style.animationDuration = `${0.5 + Math.random() * 0.5}s`;
                     starsContainer.appendChild(star);
